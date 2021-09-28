@@ -1,9 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import Header from '../../components/Header';
 import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
 import axios from 'axios';
-import {FlatList, View, ActivityIndicator} from 'react-native';
+import {FlatList, View, ActivityIndicator, Alert} from 'react-native';
 import {styles} from './UsersListStyles';
 
 const RenderUser = ({item}) => {
@@ -26,6 +27,17 @@ const UsersList = () => {
   const [randomUsers, setRandomUsers] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const API_RANDOMUSERS = 'https://randomuser.me/api/?results=20';
+
+  const openAlert = () => {
+    const item = randomUsers[Math.floor(Math.random() * randomUsers.length)];
+    console.log(item);
+    Alert.alert('', `Hello, ${item.name.first}`, [
+      {
+        text: 'Cancel',
+        style: 'cancel',
+      },
+    ]);
+  };
 
   const handlerFetchUsers = async () => {
     if (isLoading) {
@@ -57,7 +69,11 @@ const UsersList = () => {
 
   return (
     <>
-      <Header title={'Список пользователей'} onPressRight={handlerFetchUsers} />
+      <Header
+        title={'Список пользователей'}
+        onPressLeft={openAlert}
+        onPressRight={handlerFetchUsers}
+      />
       <FlatList
         contentContainerStyle={styles.containerList}
         ListEmptyComponent={
