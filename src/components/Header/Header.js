@@ -4,7 +4,6 @@ import {styles} from './HeaderStyles';
 
 const Header = props => {
   const {title, onPressLeft, onPressRight} = props;
-
   const renderButtonBack = () => {
     if (onPressLeft) {
       return (
