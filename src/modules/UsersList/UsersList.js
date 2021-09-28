@@ -26,7 +26,16 @@ const RenderUser = ({item}) => {
 const UsersList = () => {
   const [randomUsers, setRandomUsers] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const API_RANDOMUSERS = 'https://randomuser.me/api/?results=20';
+  const [results, setResults] = useState(20);
+  let API_RANDOMUSERS = `https://randomuser.me/api/?results=${results}`;
+
+  const handleLoadMore = () => {
+    if (isLoading) {
+      return;
+    }
+    setResults(prev => prev + 20);
+    handlerFetchUsers();
+  };
 
   const openAlert = () => {
     const item = randomUsers[Math.floor(Math.random() * randomUsers.length)];
@@ -44,15 +53,17 @@ const UsersList = () => {
       return;
     }
     setLoading(prev => true);
-    await axios
-      .get(API_RANDOMUSERS)
-      .then(response => {
-        setRandomUsers(prev => response.data.results);
-        setLoading(prev => false);
-      })
-      .catch(error => {
-        setLoading(prev => false);
-      });
+    setTimeout(async () => {
+      await axios
+        .get(API_RANDOMUSERS)
+        .then(response => {
+          setRandomUsers(prev => response.data.results);
+          setLoading(prev => false);
+        })
+        .catch(error => {
+          setLoading(prev => false);
+        });
+    }, 1500);
   };
 
   useEffect(() => {
@@ -82,6 +93,10 @@ const UsersList = () => {
         data={randomUsers}
         renderItem={({item}) => <RenderUser item={item} />}
         keyExtractor={(item, index) => index.toString()}
+        refreshing={isLoading}
+        onRefresh={handlerFetchUsers}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0}
       />
     </>
   );

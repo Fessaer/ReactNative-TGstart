@@ -1,21 +1,18 @@
 import React from 'react';
 import {Text, View, TouchableOpacity, Image} from 'react-native';
 import {styles} from './HeaderStyles';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Header = props => {
   const {title, onPressLeft, onPressRight} = props;
+
   const renderButtonBack = () => {
     if (onPressLeft) {
       return (
         <TouchableOpacity
           onPress={onPressLeft}
           style={styles.buttonContainerBack}>
-          <Image
-            style={styles.imageStyleBack}
-            source={require('../../images/nextAndBack/forwardBlue.png')}
-            tintColor="blue"
-          />
-          <Text style={styles.buttonText}>left</Text>
+          <Icon name="heart" size={20} color="blue" light />
         </TouchableOpacity>
       );
     } else {
@@ -29,12 +26,7 @@ const Header = props => {
         <TouchableOpacity
           onPress={onPressRight}
           style={styles.buttonContainerNext}>
-          <Text style={styles.buttonText}>right</Text>
-          <Image
-            style={styles.imageStyleNext}
-            source={require('../../images/nextAndBack/forwardBlue.png')}
-            tintColor="blue"
-          />
+          <Icon name="refresh" size={20} color="blue" light />
         </TouchableOpacity>
       );
     } else {
