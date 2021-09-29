@@ -4,7 +4,7 @@ import Header from '../../components/Header';
 import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
 import axios from 'axios';
-import {FlatList, View, ActivityIndicator, Alert} from 'react-native';
+import {FlatList, Alert, ActivityIndicator} from 'react-native';
 import {styles} from './UsersListStyles';
 
 const RenderUser = ({item}) => {
@@ -26,20 +26,19 @@ const RenderUser = ({item}) => {
 const UsersList = () => {
   const [randomUsers, setRandomUsers] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [results, setResults] = useState(20);
-  let API_RANDOMUSERS = `https://randomuser.me/api/?results=${results}`;
+  const [results, setResults] = useState(1);
+  let API_RANDOMUSERS = `https://randomuser.me/api/?page=${results}&results=10`;
 
   const handleLoadMore = () => {
     if (isLoading) {
       return;
     }
-    setResults(prev => prev + 20);
+    setResults(prev => prev + 1);
     handlerFetchUsers();
   };
 
   const openAlert = () => {
     const item = randomUsers[Math.floor(Math.random() * randomUsers.length)];
-    console.log(item);
     Alert.alert('', `Hello, ${item.name.first}`, [
       {
         text: 'Cancel',
@@ -53,37 +52,51 @@ const UsersList = () => {
       return;
     }
     setLoading(prev => true);
-    setTimeout(async () => {
-      await axios
-        .get(API_RANDOMUSERS)
-        .then(response => {
-          setRandomUsers(prev => response.data.results);
-          setLoading(prev => false);
-        })
-        .catch(error => {
-          setLoading(prev => false);
-        });
-    }, 1500);
+    await axios
+      .get(API_RANDOMUSERS)
+      .then(response => {
+        setRandomUsers(prev => [...prev, ...response.data.results]);
+        setLoading(prev => false);
+      })
+      .catch(error => {
+        setLoading(prev => false);
+      });
+  };
+
+  const handlerRefreshFetchUsers = async () => {
+    if (isLoading) {
+      return;
+    }
+    setLoading(prev => true);
+    await axios
+      .get(API_RANDOMUSERS)
+      .then(response => {
+        setRandomUsers(prev => response.data.results);
+        setLoading(prev => false);
+      })
+      .catch(error => {
+        setLoading(prev => false);
+      });
   };
 
   useEffect(() => {
     handlerFetchUsers();
   }, []);
 
-  if (isLoading) {
-    return (
-      <View style={styles.container}>
-        <ActivityIndicator size="large" color="grey" />
-      </View>
-    );
-  }
+  const footer = () => {
+    if (randomUsers.length && isLoading) {
+      return <ActivityIndicator size="small" color="grey" />;
+    } else {
+      return null;
+    }
+  };
 
   return (
     <>
       <Header
         title={'Список пользователей'}
         onPressLeft={openAlert}
-        onPressRight={handlerFetchUsers}
+        onPressRight={handlerRefreshFetchUsers}
       />
       <FlatList
         contentContainerStyle={styles.containerList}
@@ -93,10 +106,9 @@ const UsersList = () => {
         data={randomUsers}
         renderItem={({item}) => <RenderUser item={item} />}
         keyExtractor={(item, index) => index.toString()}
-        refreshing={isLoading}
-        onRefresh={handlerFetchUsers}
         onEndReached={handleLoadMore}
-        onEndReachedThreshold={0}
+        onEndReachedThreshold={0.8}
+        ListFooterComponent={footer}
       />
     </>
   );
