@@ -1,9 +1,16 @@
 import React from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image, ActivityIndicator} from 'react-native';
 import {styles} from './EmptyListStyles';
 
 const EmptyList = props => {
   const {text, loading} = props;
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" color="grey" />
+      </View>
+    );
+  }
   if (!loading) {
     return (
       <View style={styles.container}>
