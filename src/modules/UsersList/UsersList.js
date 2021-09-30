@@ -26,15 +26,16 @@ const RenderUser = ({item}) => {
 const UsersList = () => {
   const [randomUsers, setRandomUsers] = useState([]);
   const [isLoading, setLoading] = useState(false);
-  const [results, setResults] = useState(1);
-  let API_RANDOMUSERS = `https://randomuser.me/api/?page=${results}&results=10`;
+  const [page, setPage] = useState(INIT_PAGE);
+  const [isRefresh, setRefresh] = useState(false);
+  const INIT_PAGE = 1;
 
   const handleLoadMore = () => {
-    if (isLoading) {
+    if (isLoading || isRefresh) {
       return;
     }
-    setResults(prev => prev + 1);
-    handlerFetchUsers();
+    setLoading(true);
+    handlerFetchUsers(page + 1);
   };
 
   const openAlert = () => {
@@ -47,48 +48,58 @@ const UsersList = () => {
     ]);
   };
 
-  const handlerFetchUsers = async () => {
-    if (isLoading) {
+  const refreshButton = () => {
+    if (isLoading || isRefresh) {
       return;
     }
-    setLoading(prev => true);
-    await axios
-      .get(API_RANDOMUSERS)
-      .then(response => {
-        setRandomUsers(prev => [...prev, ...response.data.results]);
-        setLoading(prev => false);
-      })
-      .catch(error => {
-        setLoading(prev => false);
-      });
+    setLoading(true);
+    setRandomUsers([]);
+    handlerFetchUsers(INIT_PAGE);
   };
 
-  const handlerRefreshFetchUsers = async () => {
-    if (isLoading) {
+  const refreshList = () => {
+    if (isLoading || isRefresh) {
       return;
     }
-    setLoading(prev => true);
+    setRefresh(true);
+    handlerFetchUsers(INIT_PAGE);
+  };
+
+  const handlerFetchUsers = async props => {
+    let API_RANDOMUSERS = `https://randomuser.me/api/?page=${props}&results=10`;
+    if (isLoading || isRefresh) {
+      return;
+    }
     await axios
       .get(API_RANDOMUSERS)
       .then(response => {
-        setRandomUsers(prev => response.data.results);
-        setLoading(prev => false);
+        setRandomUsers(prev => {
+          if (props === INIT_PAGE) {
+            return response.data.results;
+          } else {
+            return [...prev, ...response.data.results];
+          }
+        });
+        setLoading(false);
+        setRefresh(false);
+        setPage(props);
       })
       .catch(error => {
-        setLoading(prev => false);
+        setLoading(false);
+        setRefresh(false);
       });
   };
 
   useEffect(() => {
-    handlerFetchUsers();
+    setLoading(true);
+    handlerFetchUsers(page);
   }, []);
 
   const footer = () => {
     if (randomUsers.length && isLoading) {
       return <ActivityIndicator size="small" color="grey" />;
-    } else {
-      return null;
     }
+    return null;
   };
 
   return (
@@ -96,7 +107,7 @@ const UsersList = () => {
       <Header
         title={'Список пользователей'}
         onPressLeft={openAlert}
-        onPressRight={handlerRefreshFetchUsers}
+        onPressRight={refreshButton}
       />
       <FlatList
         contentContainerStyle={styles.containerList}
@@ -106,6 +117,8 @@ const UsersList = () => {
         data={randomUsers}
         renderItem={({item}) => <RenderUser item={item} />}
         keyExtractor={(item, index) => index.toString()}
+        refreshing={isRefresh}
+        onRefresh={refreshList}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.8}
         ListFooterComponent={footer}
