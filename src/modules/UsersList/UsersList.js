@@ -1,11 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import Header from '../../components/Header';
 import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
-import axios from 'axios';
 import {FlatList, Alert, ActivityIndicator} from 'react-native';
 import {styles} from './UsersListStyles';
+import {connect} from 'react-redux';
+import * as actions from '../../store/users/actions';
+
+const mapStateToProps = state => {
+  const {data, page, loading, refresh} = state.users;
+  return {data, page, loading, refresh};
+};
+
+const actionCreators = {
+  fetchUsers: actions.fetchUsers,
+  startLoading: actions.startLoading,
+  startRefresh: actions.startRefresh,
+};
 
 const RenderUser = ({item}) => {
   return (
@@ -23,23 +35,12 @@ const RenderUser = ({item}) => {
   );
 };
 
-const UsersList = () => {
-  const [randomUsers, setRandomUsers] = useState([]);
-  const [isLoading, setLoading] = useState(false);
-  const [page, setPage] = useState(INIT_PAGE);
-  const [isRefresh, setRefresh] = useState(false);
-  const INIT_PAGE = 1;
-
-  const handleLoadMore = () => {
-    if (isLoading || isRefresh) {
-      return;
-    }
-    setLoading(true);
-    handlerFetchUsers(page + 1);
-  };
+const UsersList = props => {
+  const {data, page, loading, refresh} = props;
+  const {fetchUsers, startLoading, startRefresh} = props;
 
   const openAlert = () => {
-    const item = randomUsers[Math.floor(Math.random() * randomUsers.length)];
+    const item = data[Math.floor(Math.random() * data.length)];
     Alert.alert('', `Hello, ${item.name.first}`, [
       {
         text: 'Cancel',
@@ -48,55 +49,41 @@ const UsersList = () => {
     ]);
   };
 
-  const refreshButton = () => {
-    if (isLoading || isRefresh) {
+  const handleLoadMore = () => {
+    if (loading || refresh) {
       return;
     }
-    setLoading(true);
-    setRandomUsers([]);
-    handlerFetchUsers(INIT_PAGE);
+    handlerFetchUsers(page + 1, 'loading');
+  };
+
+  const refreshButton = () => {
+    if (loading || refresh) {
+      return;
+    }
+    handlerFetchUsers(1, 'loading');
   };
 
   const refreshList = () => {
-    if (isLoading || isRefresh) {
+    if (loading || refresh) {
       return;
     }
-    setRefresh(true);
-    handlerFetchUsers(INIT_PAGE);
+    handlerFetchUsers(1, 'refresh');
   };
 
-  const handlerFetchUsers = async props => {
-    let API_RANDOMUSERS = `https://randomuser.me/api/?page=${props}&results=10`;
-    if (isLoading || isRefresh) {
-      return;
-    }
-    await axios
-      .get(API_RANDOMUSERS)
-      .then(response => {
-        setRandomUsers(prev => {
-          if (props === INIT_PAGE) {
-            return response.data.results;
-          } else {
-            return [...prev, ...response.data.results];
-          }
-        });
-        setLoading(false);
-        setRefresh(false);
-        setPage(props);
-      })
-      .catch(error => {
-        setLoading(false);
-        setRefresh(false);
-      });
+  const handlerFetchUsers = (props, activeLoad) => {
+    const activeSpin = {
+      refresh: () => startRefresh(),
+      loading: () => startLoading(),
+    };
+    fetchUsers(props, activeSpin[activeLoad]);
   };
 
   useEffect(() => {
-    setLoading(true);
-    handlerFetchUsers(page);
+    handlerFetchUsers(page, 'loading');
   }, []);
 
   const footer = () => {
-    if (randomUsers.length && isLoading) {
+    if (data.length && loading) {
       return <ActivityIndicator size="small" color="grey" />;
     }
     return null;
@@ -111,13 +98,11 @@ const UsersList = () => {
       />
       <FlatList
         contentContainerStyle={styles.containerList}
-        ListEmptyComponent={
-          <EmptyList text={'нет данных'} loading={isLoading} />
-        }
-        data={randomUsers}
+        ListEmptyComponent={<EmptyList text={'нет данных'} loading={loading} />}
+        data={data}
         renderItem={({item}) => <RenderUser item={item} />}
         keyExtractor={(item, index) => index.toString()}
-        refreshing={isRefresh}
+        refreshing={refresh}
         onRefresh={refreshList}
         onEndReached={handleLoadMore}
         onEndReachedThreshold={0.8}
@@ -127,4 +112,7 @@ const UsersList = () => {
   );
 };
 
-export default UsersList;
+export default connect(
+  mapStateToProps,
+  actionCreators,
+)(UsersList);
