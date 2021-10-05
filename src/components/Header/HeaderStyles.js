@@ -8,7 +8,7 @@ export const styles = StyleSheet.create({
     height: 13.28,
     alignItems: 'center',
     marginVertical: 8,
-    marginHorizontal: 3.32,
+    marginHorizontal: 20,
   },
   buttonContainerBack: {
     width: 40,
@@ -52,5 +52,11 @@ export const styles = StyleSheet.create({
     fontSize: 11.28,
     fontFamily: 'SFProText-Regular',
     fontWeight: 'bold',
+  },
+  modal: {
+    position: 'absolute',
+    right: '7%',
+    top: -3,
+    zIndex: 10,
   },
 });
