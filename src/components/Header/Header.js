@@ -4,7 +4,7 @@ import {styles} from './HeaderStyles';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 const Header = props => {
-  const {title, onPressLeft, onPressRight} = props;
+  const {title, onPressLeft, onPressRight, handlerOpenModal} = props;
 
   const renderButtonBack = () => {
     if (onPressLeft) {
@@ -33,12 +33,25 @@ const Header = props => {
       return <View style={styles.buttonContainerNext} />;
     }
   };
+
+  const renderOpenModal = () => {
+    if (handlerOpenModal) {
+      return (
+        <TouchableOpacity onPress={handlerOpenModal} style={styles.modal}>
+          <Icon name="th-list" size={20} color="blue" light />
+        </TouchableOpacity>
+      );
+    } else {
+      return null;
+    }
+  };
   return (
     <View style={styles.container}>
       {renderButtonBack()}
       <View style={styles.titleContainer}>
         <Text style={styles.text}>{title}</Text>
       </View>
+      {renderOpenModal()}
       {renderButtonNext()}
     </View>
   );
