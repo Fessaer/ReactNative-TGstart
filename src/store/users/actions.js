@@ -8,16 +8,23 @@ export const getUsers = (data, page) => ({
   },
 });
 
-export const startLoading = bool => ({
+export const startLoading = () => ({
   type: 'START_LOADING',
 });
 
-export const startRefresh = bool => ({
+export const startRefresh = () => ({
   type: 'START_REFRESH',
 });
 
-export const resopneError = bool => ({
+export const resopneError = () => ({
   type: 'RESPONSE_ERROR',
+});
+
+export const setVisabilityFilter = filter => ({
+  type: 'SHOW_DATA',
+  payload: {
+    filter,
+  },
 });
 
 export const fetchUsers = (props, callbackLoad) => {

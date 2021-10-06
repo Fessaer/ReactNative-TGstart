@@ -5,20 +5,7 @@ import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
 import {FlatList, Alert, ActivityIndicator} from 'react-native';
 import {styles} from './UsersListStyles';
-import {connect} from 'react-redux';
-import * as actions from '../../store/users/actions';
 import ModalFilters from '../../components/ModalFilters';
-
-const mapStateToProps = state => {
-  const {data, page, loading, refresh} = state.users;
-  return {data, page, loading, refresh};
-};
-
-const actionCreators = {
-  fetchUsers: actions.fetchUsers,
-  startLoading: actions.startLoading,
-  startRefresh: actions.startRefresh,
-};
 
 const RenderUser = ({item}) => {
   return (
@@ -38,25 +25,13 @@ const RenderUser = ({item}) => {
 
 const UsersList = props => {
   const {data, page, loading, refresh} = props;
-  const {fetchUsers, startLoading, startRefresh} = props;
+  const {fetchUsers, startLoading, startRefresh, selectFilter} = props;
   const [openModal, setOpenModal] = useState(false);
-  const [filters, setFilters] = useState('');
+  const [filters, setFilters] = useState('all');
 
   const handlerFilter = str => {
     setFilters(str);
   };
-
-  const filterData = (letter, dataUsers) => {
-    if (letter === '') {
-      return dataUsers;
-    } else {
-      return dataUsers.filter(item => {
-        const upName = item.name.first.toUpperCase();
-        return upName.includes(letter.toUpperCase());
-      });
-    }
-  };
-  const result = useMemo(() => filterData(filters, data), [filters, data]);
 
   const openFilterModal = () => {
     setOpenModal(!openModal);
@@ -65,6 +40,7 @@ const UsersList = props => {
   const applyFilterModal = str => {
     setFilters(str);
     setOpenModal(!openModal);
+    selectFilter(str);
   };
 
   const openAlert = () => {
@@ -135,7 +111,7 @@ const UsersList = props => {
       <FlatList
         contentContainerStyle={styles.containerList}
         ListEmptyComponent={<EmptyList text={'нет данных'} loading={loading} />}
-        data={result}
+        data={data}
         renderItem={({item}) => <RenderUser item={item} />}
         keyExtractor={(item, index) => index.toString()}
         refreshing={refresh}
@@ -148,7 +124,4 @@ const UsersList = props => {
   );
 };
 
-export default connect(
-  mapStateToProps,
-  actionCreators,
-)(UsersList);
+export default UsersList;

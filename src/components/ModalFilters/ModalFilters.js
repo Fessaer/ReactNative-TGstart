@@ -16,7 +16,7 @@ const RenderItems = (renderImage, callback, state, item) => {
       underlayColor="grey"
       onPress={() => {
         if (item === state) {
-          return callback('');
+          return callback('all');
         }
         callback(item);
       }}

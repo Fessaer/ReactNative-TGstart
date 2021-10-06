@@ -7,6 +7,7 @@ const preloadedState = {
     page: 1,
     loading: false,
     refresh: false,
+    filterShow: 'all',
   },
 };
 
