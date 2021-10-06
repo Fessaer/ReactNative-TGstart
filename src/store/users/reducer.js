@@ -30,6 +30,11 @@ export default function usersReduser(state = {}, action) {
       };
     }
 
+    case 'SHOW_DATA': {
+      const {filter} = action.payload;
+      return {...state, filterShow: filter};
+    }
+
     default:
       return state;
   }
