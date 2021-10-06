@@ -1,11 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState, useMemo} from 'react';
-import Header from '../../components/Header';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
-import {FlatList, Alert, ActivityIndicator} from 'react-native';
+import {FlatList, Alert, ActivityIndicator, SafeAreaView} from 'react-native';
 import {styles} from './UsersListStyles';
 import ModalFilters from '../../components/ModalFilters';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import NaviButton from '../../components/NaviButton';
 
 const RenderUser = ({item}) => {
   return (
@@ -25,7 +26,13 @@ const RenderUser = ({item}) => {
 
 const UsersList = props => {
   const {data, page, loading, refresh} = props;
-  const {fetchUsers, startLoading, startRefresh, selectFilter} = props;
+  const {
+    fetchUsers,
+    startLoading,
+    startRefresh,
+    selectFilter,
+    navigation,
+  } = props;
   const [openModal, setOpenModal] = useState(false);
   const [filters, setFilters] = useState('all');
 
@@ -93,14 +100,23 @@ const UsersList = props => {
     return null;
   };
 
+  const iconHeader = <Icon name="heart" size={20} color="blue" light />;
+  const iconRefresh = <Icon name="refresh" size={20} color="blue" light />;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <NaviButton icon={iconHeader} onPressHandler={openAlert} />
+      ),
+      headerRight: () => (
+        <NaviButton icon={iconRefresh} onPressHandler={refreshButton} />
+      ),
+      headerTitleAlign: 'center',
+    });
+  }, [navigation]);
+
   return (
-    <>
-      <Header
-        title={'Список пользователей'}
-        onPressLeft={openAlert}
-        onPressRight={refreshButton}
-        handlerOpenModal={openFilterModal}
-      />
+    <SafeAreaView style={styles.safeArea}>
       <ModalFilters
         openModal={openModal}
         handlerOpenModal={openFilterModal}
@@ -120,7 +136,7 @@ const UsersList = props => {
         onEndReachedThreshold={0.8}
         ListFooterComponent={footer}
       />
-    </>
+    </SafeAreaView>
   );
 };
 
