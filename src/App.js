@@ -6,6 +6,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import UserDetails from './components/UserDetails';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import UserPage from './components/UserPage';
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,7 @@ const App = () => {
             options={{title: 'Список пользователей'}}
           />
           <Stack.Screen name="UserDetails" component={UserDetails} />
+          <Stack.Screen name="UserPage" component={UserPage} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

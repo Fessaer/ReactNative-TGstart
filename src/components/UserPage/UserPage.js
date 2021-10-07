@@ -1,10 +1,16 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import {View, Image} from 'react-native';
 import {styles} from './UserPageStyles';
 
 const UserPage = props => {
-  const {route} = props;
-  const {image} = route.params;
+  const {route, navigation} = props;
+  const {image, name} = route.params;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: name,
+    });
+  }, [name, navigation]);
 
   return (
     <View style={styles.container}>

@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useLayoutEffect} from 'react';
-import {Text, View, Image} from 'react-native';
+import {Text, View, Image, TouchableOpacity} from 'react-native';
 import styles from './UserDetailsStyles';
 
 const UserDetails = props => {
@@ -8,6 +8,13 @@ const UserDetails = props => {
   const {userId} = route.params;
 
   const state = data.find(item => item.login.uuid === userId);
+
+  const avatarEvent = () => {
+    navigation.navigate('UserPage', {
+      image: state.picture.large,
+      name: state.name.first,
+    });
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -17,12 +24,14 @@ const UserDetails = props => {
           return null;
         } else {
           return (
-            <Image
-              style={styles.avatar}
-              source={{
-                uri: state.picture.thumbnail,
-              }}
-            />
+            <TouchableOpacity onPress={avatarEvent}>
+              <Image
+                style={styles.avatar}
+                source={{
+                  uri: state.picture.thumbnail,
+                }}
+              />
+            </TouchableOpacity>
           );
         }
       },
