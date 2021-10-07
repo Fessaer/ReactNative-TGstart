@@ -1,14 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import User from '../../components/User';
 import EmptyList from '../../components/EmptyList';
-import {FlatList, Alert, ActivityIndicator, SafeAreaView} from 'react-native';
+import {
+  FlatList,
+  Alert,
+  ActivityIndicator,
+  SafeAreaView,
+  TouchableOpacity,
+} from 'react-native';
 import {styles} from './UsersListStyles';
 import ModalFilters from '../../components/ModalFilters';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import NaviButton from '../../components/NaviButton';
 
-const RenderUser = ({item}) => {
+const RenderUser = ({item, navigation}) => {
+  // console.log(item.login.uuid);
   return (
     <User
       imageAvatar={item.picture.thumbnail}
@@ -20,6 +26,8 @@ const RenderUser = ({item}) => {
       bodyTextLeft={item.nat}
       bodyTextMiddle={item.gender}
       bodyTextRight={item.dob.age}
+      navigation={navigation}
+      id={item.login.uuid}
     />
   );
 };
@@ -106,12 +114,15 @@ const UsersList = props => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <NaviButton icon={iconHeader} onPressHandler={openAlert} />
+        <TouchableOpacity style={styles.containerTouch} onPress={openAlert}>
+          {iconHeader}
+        </TouchableOpacity>
       ),
       headerRight: () => (
-        <NaviButton icon={iconRefresh} onPressHandler={refreshButton} />
+        <TouchableOpacity style={styles.containerTouch} onPress={refreshButton}>
+          {iconRefresh}
+        </TouchableOpacity>
       ),
-      headerTitleAlign: 'center',
     });
   }, [navigation]);
 
@@ -128,7 +139,9 @@ const UsersList = props => {
         contentContainerStyle={styles.containerList}
         ListEmptyComponent={<EmptyList text={'нет данных'} loading={loading} />}
         data={data}
-        renderItem={({item}) => <RenderUser item={item} />}
+        renderItem={({item}) => (
+          <RenderUser item={item} navigation={navigation} />
+        )}
         keyExtractor={(item, index) => index.toString()}
         refreshing={refresh}
         onRefresh={refreshList}

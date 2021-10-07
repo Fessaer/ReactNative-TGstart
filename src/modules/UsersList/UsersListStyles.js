@@ -8,4 +8,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
     height: '100%',
   },
+  containerTouch: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
 });

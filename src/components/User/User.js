@@ -13,13 +13,14 @@ const User = props => {
     bodyTextLeft,
     bodyTextMiddle,
     bodyTextRight,
-    onClick,
+    navigation,
+    id,
   } = props;
 
   const onPress = () => {
-    if (onClick) {
-      return onClick;
-    }
+    navigation.navigate('UserDetails', {
+      userId: id,
+    });
   };
 
   return (
