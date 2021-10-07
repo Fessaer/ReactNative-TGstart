@@ -29,7 +29,6 @@ export default function usersReduser(state = {}, action) {
         loading: false,
       };
     }
-
     case 'SHOW_DATA': {
       const {filter} = action.payload;
       return {...state, filterShow: filter};
