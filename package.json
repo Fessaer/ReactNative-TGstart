@@ -2,6 +2,7 @@
   "name": "testapp",
   "version": "0.0.1",
   "private": true,
+  
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
@@ -16,6 +17,7 @@
     "@reduxjs/toolkit": "^1.6.1",
     "add": "^2.0.6",
     "axios": "^0.21.4",
+    "jest-transform-stub": "^2.0.0",
     "react": "16.11.0",
     "react-native": "0.62.3",
     "react-native-gesture-handler": "^1.10.3",
