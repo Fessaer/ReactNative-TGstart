@@ -21,7 +21,6 @@ const fnFilteredMock = data => {
 };
 describe('UserDetails', () => {
   it('renders correctly', () => {
-    // const navigation = useNavigation();
     renderer.create(
       <NavigationContainer>
         <Stack.Navigator>
