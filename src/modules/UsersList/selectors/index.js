@@ -7,7 +7,7 @@ const getVisabilityFilter = state => state.filterShow;
 const getVisabilityUsers = createSelector(
   [getVisabilityFilter, getAllUsers],
   (visabilityFilter, users) => {
-    if (visabilityFilter === 'all') {
+    if (visabilityFilter === 'all' || !visabilityFilter) {
       return users;
     } else {
       return users.filter(item => {
