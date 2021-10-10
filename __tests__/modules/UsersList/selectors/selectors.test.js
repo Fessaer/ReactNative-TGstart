@@ -3,15 +3,8 @@
  */
 
 import 'react-native';
-import React from 'react';
-import renderer from 'react-test-renderer';
-import UserDetails from '../src/components/UserDetails/UserDetails';
-import {dataMock} from '../testing/dataMock';
-import selectorVasability from '../src/modules/UsersList/selectors/index';
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-
-const Stack = createStackNavigator();
+import {dataMock} from '../../../../testing/dataMock';
+import selectorVasability from '../../../../src/modules/UsersList/selectors/index';
 
 const fnFilteredMock = data => {
   return data.data.filter(item => {
@@ -19,25 +12,6 @@ const fnFilteredMock = data => {
     return upName.includes(data.filterShow.toUpperCase());
   });
 };
-describe('UserDetails', () => {
-  it('renders correctly', () => {
-    renderer.create(
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen name="UserDetails">
-            {props => (
-              <UserDetails
-                {...props}
-                data={dataMock.data}
-                route={dataMock.route}
-              />
-            )}
-          </Stack.Screen>
-        </Stack.Navigator>
-      </NavigationContainer>,
-    );
-  });
-});
 
 describe('Filter function a', () => {
   it('selcet A', () => {
